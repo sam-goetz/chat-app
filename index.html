@@ -6,26 +6,32 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+
 </head>
 
-<body>
+<body ng-controller="testCtrl">
 
-</html>
-<h1 id='title'>Chatter </h1>
-<div id='main-box'>
 
-  <input type="text" placeholder='Username' id="username">
+  <h1 id='title'>Chatter </h1>
+  <div id='main-box'>
 
-  <input type="text" placeholder='Type message' id="inputMessage" maxlength='141'><br><br>
-  <button id='button'>Send Message </button>
-  <button id='clearChats'>Delete History </button>
-</div>
+    <input type="text" placeholder='Username' id="username">
 
-<div id="all-chats">
-  <ul id='list-of-chats'>
+    <input type="text" placeholder='Type message' id="inputMessage" maxlength='141'><br><br>
+    <button id='button'>Send Message </button>
+    <button id='clearChats'>Delete History </button>
+    <span>Double-click a message to edit</span>
+  </div>
 
-  </ul>
-</div>
-<script type='module' src='script.js'></script>
+  <div id="all-chats">
+    <ul id='list-of-chats'>
+
+    </ul>
+  </div>
+
+
 
 </body>
+<script src='script.js' type='module'></script>
+
+</html>
