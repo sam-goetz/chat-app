@@ -6,6 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="styles.css">
 
 </head>
 
@@ -13,17 +17,22 @@
 
 
   <h1 id='title'>Chatter </h1>
-  <div id='main-box'>
-
-    <input type="text" placeholder='Username' id="username">
-
-    <input type="text" placeholder='Type message' id="inputMessage" maxlength='141'><br><br>
-    <button id='button'>Send Message </button>
-    <button id='clearChats'>Delete History </button>
-    <br>
-    <span>
-      <h2>Double-click a message to edit</h2>
-    </span>
+  <div>
+    <div id='login-box'>
+      <input type="text" placeholder='Email' id="email">
+      <input type="password" placeholder="Password" id="password">
+      <button class='btn btn-primary' id="register">Register</button>
+      <button class='btn btn-secondary' id='sign-in'>Sign In</button>
+    </div>
+    <div id="app">
+      <input type="text" placeholder='Type message' id="inputMessage" maxlength='141'><br><br>
+      <button class='btn btn-primary' id='button'>Send Message </button>
+      <button class='btn btn-danger' id='clearChats'>Delete History </button>
+      <br>
+      <span>
+        <h2>Double-click a message to edit</h2>
+      </span>
+    </div>
   </div>
 
   <div id="all-chats">
@@ -35,6 +44,10 @@
 
 
 </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src='script.js' type='module'></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 
 </html>
