@@ -29,6 +29,7 @@ const analytics = getAnalytics(app);
 let db = rtdb.getDatabase(app);
 let titleRef = rtdb.ref(db, "/");
 let chatsRef = rtdb.child(titleRef, 'chats');
+let usersRef = rtdb.child(titleRef, 'users');
 
 
 let inputMessage = document.getElementById('inputMessage')
@@ -38,6 +39,7 @@ let listOfChats = document.getElementById('list-of-chats')
 let username = document.getElementById('username')
 
 let email = '';
+let userID = '';
 
 
 /////////////////////////////////////////////////////
@@ -55,7 +57,8 @@ let renderUser = function (userObj) {
 fbauth.onAuthStateChanged(auth, user => {
   if (user) {
     email = user.email;
-    console.log(email, 'is signed in')
+    userID = user.uid;
+    console.log(email, 'is signed in', userID)
     $("#login-box").hide();
     $("#app").show();
     renderUser(user);
@@ -67,7 +70,7 @@ fbauth.onAuthStateChanged(auth, user => {
 });
 
 
-
+//register
 
 $(`#register`).on(`click`, () => {
   let email = $(`#email`).val()
@@ -76,7 +79,9 @@ $(`#register`).on(`click`, () => {
   fbauth.createUserWithEmailAndPassword(auth, email, password).then(somedata => {
     let uid = somedata.user.uid;
     let userRoleRef = rtdb.ref(db, `/users/${uid}/roles/user`);
+    let userRef = rtdb.ref(db, `/users/${uid}/email`);
     rtdb.set(userRoleRef, true);
+    rtdb.set(userRef, email);
   }).catch(function (error) {
     // Handle Errors here.
     var errorCode = error.code;
@@ -84,15 +89,34 @@ $(`#register`).on(`click`, () => {
     console.log(errorCode);
     console.log(errorMessage);
   });
-
 })
 
-
+//Sign in
 $('#sign-in').on('click', () => {
   let email = $(`#email`).val()
   let password = $(`#password`).val()
 
   fbauth.signInWithEmailAndPassword(auth, email, password).then(
+    somedata => {
+      console.log(somedata);
+    }).catch(function (error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log(errorCode);
+      console.log(errorMessage);
+    });
+
+})
+
+//Delete users
+$('#deleteEmailButton').on('click', () => {
+  let email = $(`#deleteEmail`).val()
+  // fbauth.getUserByEmail(email).then((somedata)
+  //   console.log(somedata);
+  // )
+
+  fbauth.getUserByEmail(email).then(
     somedata => {
       console.log(somedata);
     }).catch(function (error) {
@@ -132,9 +156,48 @@ rtdb.onValue(chatsRef, ss => {
   }
 });
 
-//rtdb.set(peopleRef, 'tacoo');
+//Get all rtdb users and display them, with admin buttons
+rtdb.onValue(usersRef, ss => {
+  let users = ss.val();
+  $('#list-of-users').html('');
 
-//rtdb.update(peopleRef,newGuy);
+  for (const user in users) {
+    let userElt = document.createElement('li')
+    userElt.innerText = users[user].email;
+    userElt.setAttribute('id', user)
+
+    let makeAdminBtn = document.createElement('button');
+    makeAdminBtn.innerText = 'Make Admin';
+    makeAdminBtn.setAttribute('id', `${user}-make-admin`);
+    makeAdminBtn.classList.add(`btn`, 'btn-sm', 'btn-success', 'mx-1', 'my-1')
+    makeAdminBtn.addEventListener('click', function () {
+      makeAdmin(makeAdminBtn.id)
+    });
+
+    let deleteAdminBtn = document.createElement('button');
+    deleteAdminBtn.innerText = 'Delete Admin';
+    deleteAdminBtn.setAttribute('id', `${user}-delete-admin`)
+    deleteAdminBtn.classList.add(`btn`, 'btn-sm', 'btn-warning', 'mx-1', 'my-1')
+    deleteAdminBtn.addEventListener('click', function () {
+      deleteAdmin(deleteAdminBtn.id)
+    });
+
+    let deleteUserBtn = document.createElement('button');
+    deleteUserBtn.innerText = 'Delete User';
+    deleteUserBtn.setAttribute('id', `${user}-delete-user`)
+    deleteUserBtn.classList.add(`btn`, 'btn-sm', 'btn-danger', 'mx-1', 'my-1')
+    deleteUserBtn.addEventListener('click', function () {
+      deleteUser(deleteUserBtn.id)
+    });
+
+    userElt.append(makeAdminBtn)
+    userElt.append(deleteAdminBtn)
+    userElt.append(deleteUserBtn)
+
+    $('#list-of-users').append(userElt)
+
+  }
+})
 
 const editDatabase = (chatID, editedMessage) => {
   let messageRef = rtdb.child(chatsRef, `${chatID}`);
@@ -146,6 +209,7 @@ const testFunction = (chatID) => {
   openEditWindow(chatID)
   //editDatabase(chatID)
 };
+
 
 
 const openEditWindow = (chatID) => {
@@ -166,7 +230,8 @@ const sendChat = () => {
 
   let chatObject = {
     'message': inputMessage.value,
-    'user': email
+    'user': email,
+    'uid': userID
   }
   rtdb.push(chatsRef, chatObject);
 
@@ -180,6 +245,25 @@ const sendChat = () => {
 const deleteChat = () => {
   rtdb.set(chatsRef, '')
 
+}
+
+const makeAdmin = (id) => {
+  let uid = id.split('-')[0]
+  let userAdminRef = rtdb.ref(db, `/users/${uid}/roles/admin`);
+  rtdb.set(userAdminRef, true);
+}
+
+const deleteAdmin = (id) => {
+  let uid = id.split('-')[0]
+  let userAdminRef = rtdb.ref(db, `/users/${uid}/roles/admin`);
+  rtdb.set(userAdminRef, false);
+}
+
+const deleteUser = (id) => {
+  let uid = id.split('-')[0]
+  let userRef = rtdb.ref(db, `/users/${uid}`);
+  rtdb.set(userRef, {});
+  console.log('please delete the user')
 }
 
 submitChat.addEventListener("click", sendChat);
