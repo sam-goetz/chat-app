@@ -50,6 +50,7 @@ let renderUser = function (userObj) {
   $("#app").append(`<button type="button" class='btn btn-secondary' id="logout">Logout</button>`);
   $("#logout").on("click", () => {
     fbauth.signOut(auth);
+    location.reload();
     console.log('signed out')
   })
 }
@@ -82,6 +83,7 @@ $(`#register`).on(`click`, () => {
     let userRef = rtdb.ref(db, `/users/${uid}/email`);
     rtdb.set(userRoleRef, true);
     rtdb.set(userRef, email);
+    location.reload();
   }).catch(function (error) {
     // Handle Errors here.
     var errorCode = error.code;
@@ -99,6 +101,7 @@ $('#sign-in').on('click', () => {
   fbauth.signInWithEmailAndPassword(auth, email, password).then(
     somedata => {
       console.log(somedata);
+      location.reload();
     }).catch(function (error) {
       // Handle Errors here.
       var errorCode = error.code;
@@ -106,7 +109,6 @@ $('#sign-in').on('click', () => {
       console.log(errorCode);
       console.log(errorMessage);
     });
-
 })
 
 //Delete users
