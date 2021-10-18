@@ -74,16 +74,30 @@ fbauth.onAuthStateChanged(auth, user => {
 //register
 
 $(`#register`).on(`click`, () => {
-  let email = $(`#email`).val()
+  email = $(`#email`).val()
   let password = $(`#password`).val()
+
 
   fbauth.createUserWithEmailAndPassword(auth, email, password).then(somedata => {
     let uid = somedata.user.uid;
-    let userRoleRef = rtdb.ref(db, `/users/${uid}/roles/user`);
-    let userRef = rtdb.ref(db, `/users/${uid}/email`);
-    rtdb.set(userRoleRef, true);
-    rtdb.set(userRef, email);
-    location.reload();
+    email = $(`#email`).val()
+
+    let userPackage = {
+      "email": email,
+      "roles": {
+        "user": true,
+        "admin": false
+      }
+    }
+
+    let userRef = rtdb.ref(db, `/users/${uid}`);
+    rtdb.set(userRef, userPackage).then(() => {
+      let userRoleRef = rtdb.ref(db, `/users/${uid}/roles/user`);
+      rtdb.set(userRoleRef, true);
+      location.reload();
+    });
+
+
   }).catch(function (error) {
     // Handle Errors here.
     var errorCode = error.code;
